@@ -1,9 +1,7 @@
-{
-  "name": "cicd-demo",
-  "version": "1.0.0",
-  "description": "Simple Node.js app for CI/CD",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  }
-}
+FROM node:20-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY . .
+EXPOSE 3000
+CMD ["node", "server.js"]
