@@ -1,4 +1,4 @@
-name: Matrix Build
+name: Matrix Sa Filterima
 
 on:
   push:
@@ -14,7 +14,21 @@ jobs:
       fail-fast: false
       matrix:
         node-version: [18.x, 20.x, 22.x]
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        
+        # Ovdje izbacujemo neželjene kombinacije
+        exclude:
+          - os: windows-latest
+            node-version: 18.x
+          - os: macos-latest
+            node-version: 18.x
+            
+        # Ovdje dodajemo dodatne varijable za specifičnu kombinaciju
+        include:
+          - os: ubuntu-latest
+            node-version: 20.x
+            experimental: true
+            extra-flag: "--coverage"
         
     steps:
       - uses: actions/checkout@v4
@@ -30,6 +44,10 @@ jobs:
         
       - name: Pokreni testove
         run: npm test
-        
-      - name: Ispisi okruzenje
-        run: node --version && npm --version
+
+      # Ovaj korak će ispisati extra-flag samo tamo gdje je uključen (Ubuntu + Node 20)
+      - name: Ispisi dodatne zastavice ako postoje
+        run: |
+          echo "Operativni sistem: ${{ matrix.os }}"
+          echo "Eksperimentalno: ${{ matrix.experimental }}"
+          echo "Dodatna zastavica: ${{ matrix.extra-flag }}"
